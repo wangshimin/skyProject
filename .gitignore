@@ -1,0 +1,8 @@
+/.idea/
+# 编译后的target目录
+**/target/
+.idea
+*.iml
+*.class
+*Test.java
+**/test/
