@@ -22,7 +22,7 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/admin/dish")
 @Api(tags = "菜品相关接口")
-public class DishCtroller {
+public class DishController {
 
     @Autowired
     private DishService dishService;
