@@ -6,6 +6,11 @@ sky:
     database: sky_take_out
     username: root
     password: root
+  redis:
+    host: localhost
+    port: 16379
+    password:
+    database: 0
 
   alioss:
     endpoint: oss-cn-beijing.aliyuncs.com
