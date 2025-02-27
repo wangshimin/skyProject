@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // 登录成功，返回用户对象
-        return null;
+        return user;
     }
 
     /**
@@ -70,6 +70,7 @@ public class UserServiceImpl implements UserService {
         map.put("secret", weChatProperties.getSecret());// 小程序appsecret
         map.put("js_code", code);// 登录凭证，即小程序调用wx.login返回的code
         map.put("grant_type", "authorization_code");// 授权类型
+        System.out.println(map);
         String json = HttpClientUtil.doGet(WX_LOGIN_URL, map);
 
         JSONObject jsonObject = JSON.parseObject(json);
