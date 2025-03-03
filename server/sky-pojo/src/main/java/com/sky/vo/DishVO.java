@@ -1,5 +1,6 @@
 package com.sky.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sky.entity.DishFlavor;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -41,6 +42,7 @@ public class DishVO implements Serializable {
     private Integer status;
 
     @ApiModelProperty(value = "更新时间", required = true)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "分类名称")
