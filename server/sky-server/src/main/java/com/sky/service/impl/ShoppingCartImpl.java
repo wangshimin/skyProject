@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -27,6 +28,8 @@ public class ShoppingCartImpl implements ShoppingCartService {
     private DishMapper dishMapper;
     @Autowired
     private SetmealMapper setmealMapper;
+    @Autowired
+    private ShoppingCartService shoppingCartService;
 
     /**
      * 添加购物车
@@ -71,5 +74,19 @@ public class ShoppingCartImpl implements ShoppingCartService {
             shoppingCart.setCreateTime(LocalDateTime.now());
             shoppingCartMapper.insert(shoppingCart);
         }
+    }
+
+    /**
+     * 查看购物车
+     *
+     * @return
+     */
+    @Override
+    public List<ShoppingCart> showShoppingCart() {
+        // 获取到当前微信用户的id
+        Long userId = BaseContext.getCurrentId();
+        ShoppingCart shoppingCart = ShoppingCart.builder().userId(userId).build();
+        List<ShoppingCart> list = shoppingCartMapper.list(shoppingCart);
+        return list;
     }
 }
