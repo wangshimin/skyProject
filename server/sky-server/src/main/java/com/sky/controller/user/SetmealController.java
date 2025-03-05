@@ -26,15 +26,15 @@ public class SetmealController {
 
     /**
      * 条件查询
-     * @param catoryId
+     * @param categoryId 分类id
      * @return
      */
     @GetMapping("/list")
     @ApiOperation("根据分类id查询套餐")
-    public Result<List<Setmeal>> list(Long catoryId) {
+    public Result<List<Setmeal>> list(Long categoryId) {
 
         Setmeal setmeal = new Setmeal();
-        setmeal.setCategoryId(catoryId);
+        setmeal.setCategoryId(categoryId);
         setmeal.setStatus(StatusConstant.ENABLE);
 
         List<Setmeal> list = setmealService.list(setmeal);
