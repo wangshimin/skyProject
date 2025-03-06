@@ -1,5 +1,7 @@
 package com.sky.entity;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,48 +16,49 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ApiModel("地址簿")
 public class AddressBook implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    @ApiModelProperty(value = "地址簿id", required = false)
     private Long id;
 
-    //用户id
+    @ApiModelProperty(value = "用户id", required = false)
     private Long userId;
 
-    //收货人
+    @ApiModelProperty(value = "收货人", required = false)
     private String consignee;
 
-    //手机号
+    @ApiModelProperty(value = "手机号", required = true)
     private String phone;
 
-    //性别 0 女 1 男
+    @ApiModelProperty(value = "性别 0 女 1 男", required = true)
     private String sex;
 
-    //省级区划编号
+    @ApiModelProperty(value = "省级区划编号", required = false)
     private String provinceCode;
 
-    //省级名称
+    @ApiModelProperty(value = "省级名称", required = false)
     private String provinceName;
 
-    //市级区划编号
+    @ApiModelProperty(value = "市级区划编号", required = false)
     private String cityCode;
 
-    //市级名称
+    @ApiModelProperty(value = "市级名称", required = false)
     private String cityName;
 
-    //区级区划编号
+    @ApiModelProperty(value = "区级区划编号", required = false)
     private String districtCode;
 
-    //区级名称
+    @ApiModelProperty(value = "区级名称", required = false)
     private String districtName;
 
-    //详细地址
+    @ApiModelProperty(value = "详细地址", required = true)
     private String detail;
 
-    //标签
+    @ApiModelProperty(value = "标签", required = false)
     private String label;
 
-    //是否默认 0否 1是
+    @ApiModelProperty(value = "是否默认 0否 1是", required = false)
     private Integer isDefault;
 }
