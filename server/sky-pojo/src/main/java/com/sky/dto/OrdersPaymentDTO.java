@@ -1,14 +1,17 @@
 package com.sky.dto;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import java.io.Serializable;
 
 @Data
+@ApiModel("订单支付信息")
 public class OrdersPaymentDTO implements Serializable {
-    //订单号
+    @ApiModelProperty("订单号")
     private String orderNumber;
 
-    //付款方式
+    @ApiModelProperty("付款方式")
     private Integer payMethod;
 
 }
