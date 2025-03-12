@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-@ApiModel("OrdersPageQueryDTO")
+@ApiModel(description = "订单查询条件")
 public class OrdersPageQueryDTO implements Serializable {
 
     @ApiModelProperty("页码")
