@@ -10,9 +10,9 @@ import java.io.Serializable;
 @ApiModel(value = "订单确认传输对象")
 public class OrdersConfirmDTO implements Serializable {
 
-    @ApiModelProperty(value = "订单id")
+    @ApiModelProperty(value = "订单id", required = true)
     private Long id;
-    @ApiModelProperty(value = "订单状态 1待付款 2待接单 3 已接单 4 派送中 5 已完成 6 已取消 7 退款")
+    @ApiModelProperty(value = "订单状态 1待付款 2待接单 3 已接单 4 派送中 5 已完成 6 已取消 7 退款", hidden = true)
     private Integer status;
 
 }
