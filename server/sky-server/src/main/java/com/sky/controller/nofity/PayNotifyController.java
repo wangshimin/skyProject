@@ -3,12 +3,16 @@ package com.sky.controller.nofity;
 import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.sky.entity.Orders;
+import com.sky.mapper.OrderMapper;
 import com.sky.properties.WeChatProperties;
 import com.sky.service.OrderService;
 import com.wechat.pay.contrib.apache.httpclient.util.AesUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,6 +34,8 @@ public class PayNotifyController {
     private OrderService orderService;
     @Autowired
     private WeChatProperties weChatProperties;
+    @Autowired
+    private OrderMapper orderMapper;
 
     public void paySuccessNotify(HttpServletRequest request, HttpServletResponse response) throws Exception {
         // 读取数据
@@ -53,6 +59,54 @@ public class PayNotifyController {
         // 给微信响应
         responseToWeixin(response);
 
+    }
+
+    /**
+     * 处理微信退款成功的回调通知
+     *
+     * @param requestBody 微信回调的请求体
+     * @return 返回给微信的处理结果
+     */
+    @PostMapping("/refundsuccess")
+    public void refundsuccess(@RequestBody String requestBody, HttpServletResponse response) throws Exception {
+        // 解析微信回调的请求体，获取退款相关信息
+        JSONObject jsonObject = JSONObject.parseObject(requestBody);
+        String outRefundNo = jsonObject.getString("out_refund_no"); // 商户退款单号
+        String outTradeNo = jsonObject.getString("out_trade_no"); // 商户订单号
+        String refundStatus = jsonObject.getString("refund_status"); // 退款状态
+
+        // 根据退款状态处理业务逻辑
+        switch (refundStatus) {
+            case "SUCCESS":
+                // 退款成功，更新订单支付状态
+                Orders orders = new Orders();
+                orders.setNumber(outTradeNo);
+                orders.setPayStatus(Orders.REFUND);
+                orders.setStatus(Orders.CANCELLED); // 微信支付回调是一个异步过程，可能会在订单状态被修改后触发，因此需要在回调中再次确认和更新订单状态，以确保订单状态与支付状态一致。
+                // 直接调用OrderMapper更新订单支付状态
+                orderMapper.update(orders);
+                log.info("退款成功，订单号：{}，退款单号：{}", outTradeNo, outRefundNo);
+                break;
+            case "FAIL":
+                // 退款失败，记录日志
+                log.error("退款失败，订单号：{}，退款单号：{}", outTradeNo, outRefundNo);
+                break;
+            case "PROCESSING":
+                // 退款处理中，记录日志
+                log.info("退款处理中，订单号：{}，退款单号：{}", outTradeNo, outRefundNo);
+                break;
+            case "ABNORMAL":
+                // 退款异常，记录日志
+                log.warn("退款异常，订单号：{}，退款单号：{}", outTradeNo, outRefundNo);
+                break;
+            default:
+                // 其他状态，记录日志
+                log.warn("未知的退款状态：{}，订单号：{}，退款单号：{}", refundStatus, outTradeNo, outRefundNo);
+                break;
+        }
+
+        // 返回成功响应给微信
+        responseToWeixin(response);
     }
 
     /**
