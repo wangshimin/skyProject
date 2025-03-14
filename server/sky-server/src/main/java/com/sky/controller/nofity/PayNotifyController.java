@@ -37,6 +37,12 @@ public class PayNotifyController {
     @Autowired
     private OrderMapper orderMapper;
 
+    /**
+     * 处理微信支付成功的回调通知
+     * @param request
+     * @param response
+     * @throws Exception
+     */
     public void paySuccessNotify(HttpServletRequest request, HttpServletResponse response) throws Exception {
         // 读取数据
         String body = readData(request);
