@@ -108,4 +108,16 @@ public class OrderController {
         orderService.delivery(id);
         return Result.success();
     }
+
+    /**
+     * 完成订单
+     * @param id 订单id
+     * @return
+     */
+    @PutMapping("/complete/{id}")
+    @ApiOperation("完成订单")
+    public Result complete(@ApiParam(name = "订单id", example = "1", required = true)@PathVariable("id") Long id) {
+        orderService.complete(id);
+        return Result.success();
+    }
 }

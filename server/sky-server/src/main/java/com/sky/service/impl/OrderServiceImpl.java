@@ -21,6 +21,7 @@ import com.sky.vo.OrderVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -311,7 +312,7 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 派送订单
      *
-     * @param id
+     * @param id 订单id
      */
     @Override
     public void delivery(Long id) {
@@ -327,6 +328,30 @@ public class OrderServiceImpl implements OrderService {
         orders.setId(orderDB.getId());
         // 更新订单状态,状态转为派送中
         orders.setStatus(Orders.DELIVERY_IN_PROGRESS);
+
+        orderMapper.update(orders);
+    }
+
+    /**
+     * 完成订单
+     *
+     * @param id 订单id
+     */
+    @Override
+    public void complete(Long id) {
+        // 根据id查询订单
+        Orders orderDB = orderMapper.getById(id);
+
+        // 校验订单状态是否存在，只有派送中的订单才可完成
+        if (orderDB == null || !orderDB.getStatus().equals(Orders.DELIVERY_IN_PROGRESS)) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        Orders orders = new Orders();
+        orders.setId(orderDB.getId());
+        // 更新订单状态,状态转为完成
+        orders.setStatus(Orders.COMPLETED);
+        orders.setDeliveryTime(LocalDateTime.now());
 
         orderMapper.update(orders);
     }

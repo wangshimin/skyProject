@@ -92,7 +92,13 @@ public interface OrderService {
 
     /**
      * 派送订单
-     * @param id
+     * @param id 订单id
      */
     void delivery(Long id);
+
+    /**
+     * 完成订单
+     * @param id 订单id
+     */
+    void complete(Long id);
 }
