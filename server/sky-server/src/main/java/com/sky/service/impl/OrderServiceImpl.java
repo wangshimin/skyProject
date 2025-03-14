@@ -253,23 +253,56 @@ public class OrderServiceImpl implements OrderService {
         }
 
         // 支付状态：0-未支付，1-已支付，2-退款中，3-已退款
-        if (orderDB.getPayStatus() == Orders.PAID) {
-            // 用户已支付，需要退款
-            // 调用微信支付退款接口
-            String refund = weChatPayUtil.refund(
-                    orderDB.getNumber(),//商户订单号
-                    orderDB.getNumber(),//商户退款单号
-                    orderDB.getAmount(),//退款金额，单位 元
-                    orderDB.getAmount()//原订单金额
-            );
-            log.info("申请退款：{}", refund);
-        }
+//        if (orderDB.getPayStatus() == Orders.PAID) {
+//            // 用户已支付，需要退款
+//            // 调用微信支付退款接口
+//            String refund = weChatPayUtil.refund(
+//                    orderDB.getNumber(),//商户订单号
+//                    orderDB.getNumber(),//商户退款单号
+//                    orderDB.getAmount(),//退款金额，单位 元
+//                    orderDB.getAmount()//原订单金额
+//            );
+//            log.info("申请退款：{}", refund);
+//        }
 
         // 修改订单状态、拒单原因、取消时间
         Orders orders = new Orders();
         orders.setId(ordersRejectionDTO.getId());
         orders.setStatus(Orders.CANCELLED);
         orders.setRejectionReason(ordersRejectionDTO.getRejectionReason());
+        orders.setCancelTime(LocalDateTime.now());
+
+        orderMapper.update(orders);
+    }
+
+    /**
+     * 商家取消订单
+     *
+     * @param ordersCancelDTO
+     */
+    @Override
+    public void cancel(OrdersCancelDTO ordersCancelDTO) throws Exception {
+        // 根据id查询订单
+        Orders orderDB = orderMapper.getById(ordersCancelDTO.getId());
+
+        // 支付状态：0-未支付，1-已支付，2-退款中，3-已退款
+//        if (orderDB.getPayStatus() == Orders.PAID) {
+//            // 用户已支付，需要退款
+//            // 调用微信支付退款接口
+//            String refund = weChatPayUtil.refund(
+//                    orderDB.getNumber(),//商户订单号
+//                    orderDB.getNumber(),//商户退款单号
+//                    orderDB.getAmount(),//退款金额，单位 元
+//                    orderDB.getAmount()//原订单金额
+//            );
+//            log.info("申请退款：{}", refund);
+//        }
+
+        // 修改订单状态、拒单原因、取消时间
+        Orders orders = new Orders();
+        orders.setId(ordersCancelDTO.getId());
+        orders.setStatus(Orders.CANCELLED);
+        orders.setRejectionReason(ordersCancelDTO.getCancelReason());
         orders.setCancelTime(LocalDateTime.now());
 
         orderMapper.update(orders);

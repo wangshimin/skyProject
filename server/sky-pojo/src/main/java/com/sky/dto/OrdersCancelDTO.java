@@ -10,8 +10,10 @@ import java.io.Serializable;
 @ApiModel(value = "订单取消传输对象")
 public class OrdersCancelDTO implements Serializable {
 
+    @ApiModelProperty(value = "订单id", required = true)
     private Long id;
-    @ApiModelProperty(value = "订单取消原因")
+
+    @ApiModelProperty(value = "订单取消原因", required = true)
     private String cancelReason;
 
 }
