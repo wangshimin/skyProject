@@ -253,17 +253,17 @@ public class OrderServiceImpl implements OrderService {
         }
 
         // 支付状态：0-未支付，1-已支付，2-退款中，3-已退款
-//        if (orderDB.getPayStatus() == Orders.PAID) {
-//            // 用户已支付，需要退款
-//            // 调用微信支付退款接口
-//            String refund = weChatPayUtil.refund(
-//                    orderDB.getNumber(),//商户订单号
-//                    orderDB.getNumber(),//商户退款单号
-//                    orderDB.getAmount(),//退款金额，单位 元
-//                    orderDB.getAmount()//原订单金额
-//            );
-//            log.info("申请退款：{}", refund);
-//        }
+        if (orderDB.getPayStatus() == Orders.PAID) {
+            // 用户已支付，需要退款
+            // 调用微信支付退款接口
+            String refund = weChatPayUtil.refund(
+                    orderDB.getNumber(),//商户订单号
+                    orderDB.getNumber(),//商户退款单号
+                    orderDB.getAmount(),//退款金额，单位 元
+                    orderDB.getAmount()//原订单金额
+            );
+            log.info("申请退款：{}", refund);
+        }
 
         // 修改订单状态、拒单原因、取消时间
         Orders orders = new Orders();
@@ -286,17 +286,17 @@ public class OrderServiceImpl implements OrderService {
         Orders orderDB = orderMapper.getById(ordersCancelDTO.getId());
 
         // 支付状态：0-未支付，1-已支付，2-退款中，3-已退款
-//        if (orderDB.getPayStatus() == Orders.PAID) {
-//            // 用户已支付，需要退款
-//            // 调用微信支付退款接口
-//            String refund = weChatPayUtil.refund(
-//                    orderDB.getNumber(),//商户订单号
-//                    orderDB.getNumber(),//商户退款单号
-//                    orderDB.getAmount(),//退款金额，单位 元
-//                    orderDB.getAmount()//原订单金额
-//            );
-//            log.info("申请退款：{}", refund);
-//        }
+        if (orderDB.getPayStatus() == Orders.PAID) {
+            // 用户已支付，需要退款
+            // 调用微信支付退款接口
+            String refund = weChatPayUtil.refund(
+                    orderDB.getNumber(),//商户订单号
+                    orderDB.getNumber(),//商户退款单号
+                    orderDB.getAmount(),//退款金额，单位 元
+                    orderDB.getAmount()//原订单金额
+            );
+            log.info("申请退款：{}", refund);
+        }
 
         // 修改订单状态、拒单原因、取消时间
         Orders orders = new Orders();
@@ -304,6 +304,29 @@ public class OrderServiceImpl implements OrderService {
         orders.setStatus(Orders.CANCELLED);
         orders.setRejectionReason(ordersCancelDTO.getCancelReason());
         orders.setCancelTime(LocalDateTime.now());
+
+        orderMapper.update(orders);
+    }
+
+    /**
+     * 派送订单
+     *
+     * @param id
+     */
+    @Override
+    public void delivery(Long id) {
+        // 根据id查询订单
+        Orders orderDB = orderMapper.getById(id);
+
+        // 校验订单状态是否存在，只有待派送状态的订单才可派送
+        if (orderDB == null || !orderDB.getStatus().equals(Orders.CONFIRMED)) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        Orders orders = new Orders();
+        orders.setId(orderDB.getId());
+        // 更新订单状态,状态转为派送中
+        orders.setStatus(Orders.DELIVERY_IN_PROGRESS);
 
         orderMapper.update(orders);
     }
