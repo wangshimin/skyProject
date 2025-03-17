@@ -75,4 +75,10 @@ sky:
     notifyUrl: ${sky.wechat.notifyUrl},
     # 退款成功的回调地址
     refundNotifyUrl: ${sky.wechat.refundNotifyUrl}
+  shop:
+    # 商家地址
+    address: ${sky.shop.address}
+  baidu:
+    # 百度地图的访问密钥
+    ak: ${sky.baidu.ak}
 
