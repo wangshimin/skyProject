@@ -11,10 +11,7 @@ import com.wechat.pay.contrib.apache.httpclient.util.AesUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,11 +35,22 @@ public class PayNotifyController {
     private OrderMapper orderMapper;
 
     /**
+     * （测试用）模拟微信支付成功回调
+     * @param outTradeNo 订单号
+     */
+    @GetMapping("/{outTradeNo}")
+    public void testPaySucess(@PathVariable String outTradeNo) {
+        // 模拟微信回调
+        orderService.paySuceess(outTradeNo);
+    }
+
+    /**
      * 处理微信支付成功的回调通知
      * @param request
      * @param response
      * @throws Exception
      */
+    @RequestMapping("/paySucess")
     public void paySuccessNotify(HttpServletRequest request, HttpServletResponse response) throws Exception {
         // 读取数据
         String body = readData(request);
