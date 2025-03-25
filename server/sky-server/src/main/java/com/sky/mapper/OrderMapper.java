@@ -3,6 +3,7 @@ package com.sky.mapper;
 import com.github.pagehelper.Page;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.Orders;
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -69,6 +70,16 @@ public interface OrderMapper {
      */
     @Select("select * from orders where status = #{status} and order_time < #{orderTime}")
     List<Orders> getBystatusAndOrderTimeLT(Integer status, LocalDateTime orderTime);
+
+    /**
+     * 获取每日营业额
+     * @param status 订单状态
+     * @param begin 开始时间
+     * @param end 结束时间
+     * @return 每日营业额数据
+     */
+    @MapKey("order_date")
+    List<Map<String, Object>> getDailyTurnover(Integer status, LocalDateTime begin, LocalDateTime end);
 
     /**
      * 根据动态条件统计每日的营业额数据

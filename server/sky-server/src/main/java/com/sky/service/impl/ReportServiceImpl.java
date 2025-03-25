@@ -12,10 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 数据统计相关接口实现类
@@ -38,29 +35,27 @@ public class ReportServiceImpl implements ReportService {
     public TurnoverReportVO getTurnoverStatistics(LocalDate begin, LocalDate end) {
         // 创建集合，用于存放日期
         List<LocalDate> dateList = new ArrayList<>();
-        // 循环遍历日期集合，获取日期
-        while (begin.isBefore(end)) {
+        // 创建集合，用于存放营业额数据
+        List<Double> turnoverList = new ArrayList<>();
+
+        // 查询每日营业额数据
+        LocalDateTime beginTime = LocalDateTime.of(begin, LocalTime.MIN);
+        LocalDateTime endTime = LocalDateTime.of(end, LocalTime.MAX);
+        List<Map<String, Object>> dailyTurnover = orderMapper.getDailyTurnover(Orders.COMPLETED, beginTime, endTime);
+
+        // 遍历查询结果，填充日期和营业额数据
+        while (!begin.isAfter(end)) {
             dateList.add(begin);
+            LocalDate finalBegin = begin;
+            Double turnover = dailyTurnover.stream()
+                    .filter(map -> finalBegin.equals(LocalDate.parse(map.get("order_date").toString())))
+                    .mapToDouble(map -> Double.parseDouble(map.get("total_amount").toString()))
+                    .findFirst()
+                    .orElse(0.0);
+            turnoverList.add(turnover);
             begin = begin.plusDays(1);
         }
-        dateList.add(end);
 
-        // 遍历日期集合，获取日期对应的营业额数据
-        List<Double> turnoverList = new ArrayList<>();
-        for (LocalDate date : dateList) {
-            // 查询date日期对应的营业额数据。营业额是指：状态为“已完成”的订单金额合计
-            // select sum(amount) from orders where order_time between ? and ? and status = 5
-
-            LocalDateTime beginTime = LocalDateTime.of(date, LocalTime.MIN);
-            LocalDateTime endTime = LocalDateTime.of(date, LocalTime.MAX);
-            Map map = new HashMap();
-            map.put("begin", beginTime);
-            map.put("end", endTime);
-            map.put("status", Orders.COMPLETED);
-            Double turnover = orderMapper.sumByMap(map);
-            turnover = turnover == null ? 0.0 : turnover;
-            turnoverList.add(turnover);
-        }
         // 封装返回结果
         return TurnoverReportVO.builder()
                 .dateList(StringUtils.join(dateList, ","))

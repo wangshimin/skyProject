@@ -80,5 +80,12 @@
             </if>
         </where>
     </select>
+    <select id="getDailyTurnover" resultType="java.util.Map">
+        select date(order_time) as order_date, sum(amount) as total_amount
+        from orders
+        where status = #{status}
+          and order_time between #{begin} and #{end}
+        group by date(order_time)
+    </select>
 
 </mapper>
