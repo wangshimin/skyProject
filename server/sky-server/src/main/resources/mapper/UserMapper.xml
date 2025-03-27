@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.sky.mapper.UserMapper">
 
     <!-- useGeneratedKeys: 是否使用自增主键回写 -->
@@ -9,5 +11,25 @@
         insert into user(openid, name, phone, sex, id_number, avatar, create_time)
         values (#{openid}, #{name}, #{phone}, #{sex}, #{idNumber}, #{avatar}, #{createTime})
     </insert>
+
+    <select id="getUserStatistics" resultType="map">
+        SELECT DATE(create_time) AS date, COUNT(*) AS total_users, 
+               SUM(CASE WHEN create_time BETWEEN #{beginTime} AND #{endTime} THEN 1 ELSE 0 END) AS new_users 
+        FROM user 
+        WHERE create_time BETWEEN #{beginTime} AND #{endTime}
+        GROUP BY DATE(create_time)
+    </select>
+
+    <select id="countByMap" resultType="java.lang.Integer">
+        select count(id) from user
+        <where>
+            <if test="begin != null">
+                and create_time &gt;= #{begin}
+            </if>
+            <if test="end != null">
+                and create_time &lt;= #{end}
+            </if>
+        </where>
+    </select>
 
 </mapper>
