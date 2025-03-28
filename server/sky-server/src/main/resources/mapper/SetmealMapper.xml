@@ -69,6 +69,7 @@
         </where>
         order by s.update_time desc
     </select>
+
     <select id="getByIdWithDish" parameterType="long" resultMap="setmealAndDishMap">
         select a.*,
             b.id sd_id,
@@ -78,6 +79,18 @@
             b.price sd_price,
             b.copies
             from setmeal a left join setmeal_dish b on a.id = b.setmeal_id where a.id = #{id}
+    </select>
+
+    <select id="countByMap" resultType="java.lang.Integer">
+        select count(id) from setmeal
+        <where>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+        </where>
     </select>
 
 </mapper>

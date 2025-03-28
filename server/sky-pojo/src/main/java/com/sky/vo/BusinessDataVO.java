@@ -1,5 +1,7 @@
 package com.sky.vo;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,16 +16,22 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ApiModel(value = "数据概览")
 public class BusinessDataVO implements Serializable {
 
-    private Double turnover;//营业额
+    @ApiModelProperty(value = "营业额")
+    private Double turnover;
 
-    private Integer validOrderCount;//有效订单数
+    @ApiModelProperty(value = "有效订单数")
+    private Integer validOrderCount;
 
-    private Double orderCompletionRate;//订单完成率
+    @ApiModelProperty(value = "订单完成率")
+    private Double orderCompletionRate;
 
-    private Double unitPrice;//平均客单价
+    @ApiModelProperty(value = "平均客单价")
+    private Double unitPrice;
 
-    private Integer newUsers;//新增用户数
+    @ApiModelProperty(value = "新增用户数")
+    private Integer newUsers;
 
 }
