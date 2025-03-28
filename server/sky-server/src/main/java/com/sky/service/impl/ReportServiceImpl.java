@@ -4,6 +4,7 @@ import com.sky.entity.Orders;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
+import com.sky.vo.OrderReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 import lombok.extern.slf4j.Slf4j;
@@ -111,6 +112,74 @@ public class ReportServiceImpl implements ReportService {
                 .dateList(StringUtils.join(dateList, ","))
                 .totalUserList(StringUtils.join(totalUserList, ","))
                 .newUserList(StringUtils.join(newUserList, ","))
+                .build();
+    }
+
+    /**
+     * 统计指定时间区间内的订单数据
+     *
+     * @param begin 开始日期
+     * @param end   结束日期
+     * @return
+     */
+    @Override
+    public OrderReportVO getOrderStatistics(LocalDate begin, LocalDate end) {
+        // 创建集合，用于存放日期
+        List<LocalDate> dateList = new ArrayList<>();
+        // 创建集合，用于存放订单数数据
+        List<Integer> orderCountList = new ArrayList<>();
+        // 创建集合，用于存放有效订单数数据
+        List<Integer> validOrderCountList = new ArrayList<>();
+
+        // 查询指定时间区间内的订单数据
+        LocalDateTime beginTime = LocalDateTime.of(begin, LocalTime.MIN);
+        LocalDateTime endTime = LocalDateTime.of(end, LocalTime.MAX);
+        List<Map<String, Object>> orderStatistics = orderMapper.getOrderStatistics(beginTime, endTime);
+
+        // 将查询结果按日期分组
+        Map<LocalDate, Map<String, Integer>> orderDataMap = orderStatistics.stream()
+                .collect(Collectors.toMap(
+                        data -> LocalDate.parse(data.get("orderDate").toString()),
+                        data -> {
+                            Map<String, Integer> orderData = new HashMap<>();
+                            orderData.put("orderCount", Integer.parseInt(data.get("orderCount").toString()));
+                            orderData.put("validOrderCount", Integer.parseInt(data.get("validOrderCount").toString()));
+                            return orderData;
+                        }
+                ));
+
+        // 计算总订单数和总有效订单数
+        int totalOrderCount = 0;
+        int totalValidOrderCount = 0;
+
+        // 遍历日期区间，填充数据
+        while (!begin.isAfter(end)) {
+            dateList.add(begin);
+            Map<String, Integer> orderData = orderDataMap.get(begin);
+            if (orderData != null) {
+                int orderCount = orderData.get("orderCount");
+                int validOrderCount = orderData.get("validOrderCount");
+                orderCountList.add(orderCount);
+                validOrderCountList.add(validOrderCount);
+                totalOrderCount += orderCount;
+                totalValidOrderCount += validOrderCount;
+            } else {
+                orderCountList.add(0);
+                validOrderCountList.add(0);
+            }
+            begin = begin.plusDays(1);
+        }
+
+        // 计算订单完成率
+        double orderCompletionRate = totalOrderCount == 0 ? 0 : (double) totalValidOrderCount / totalOrderCount;
+
+        return OrderReportVO.builder()
+                .dateList(StringUtils.join(dateList, ","))
+                .orderCountList(StringUtils.join(orderCountList, ","))
+                .validOrderCountList(StringUtils.join(validOrderCountList, ","))
+                .totalOrderCount(totalOrderCount)
+                .validOrderCount(totalValidOrderCount)
+                .orderCompletionRate(orderCompletionRate)
                 .build();
     }
 

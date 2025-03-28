@@ -88,4 +88,20 @@ public interface OrderMapper {
      * @return
      */
     Double sumByMap(Map map);
+
+    /**
+     * 根据动态条件统计每日的订单数量
+     * @param map
+     * @return
+     */
+    Integer countByMap(Map map);
+
+    /**
+     * 根据动态条件统计每日的订单数据
+     * @param begin
+     * @param end
+     * @return
+     */
+    @MapKey("order_date") // 指定返回的Map的key为order_date
+    List<Map<String, Object>> getOrderStatistics(LocalDateTime begin, LocalDateTime end);
 }
