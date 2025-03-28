@@ -1,6 +1,7 @@
 package com.sky.mapper;
 
 import com.github.pagehelper.Page;
+import com.sky.dto.GoodsSalesDTO;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.Orders;
 import org.apache.ibatis.annotations.MapKey;
@@ -104,4 +105,15 @@ public interface OrderMapper {
      */
     @MapKey("order_date") // 指定返回的Map的key为order_date
     List<Map<String, Object>> getOrderStatistics(LocalDateTime begin, LocalDateTime end);
+
+    /**
+     * 获取指定时间区间内销量排名前10的商品
+     *
+     * @param begin 开始时间
+     * @param end   结束时间
+     * @return 商品名称和销量数据
+     */
+    @MapKey("name")
+    List<GoodsSalesDTO> getSalesTop10(LocalDateTime begin, LocalDateTime end);
+
 }
